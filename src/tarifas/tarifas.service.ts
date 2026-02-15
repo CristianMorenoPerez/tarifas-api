@@ -59,4 +59,27 @@ export class TarifasService {
       .limit(1);
     return row ?? null;
   }
+
+  async dashboard() {
+    const [row] = await db
+      .select({
+        comercializadoras: sql<number>`COUNT(DISTINCT ${tarifasEnergia.comercializadora})`,
+        promedio: sql<number>`AVG(${tarifasEnergia.cuTotal})`,
+        maxima: sql<number>`MAX(${tarifasEnergia.cuTotal})`,
+        minima: sql<number>`MIN(${tarifasEnergia.cuTotal})`,
+      })
+      .from(tarifasEnergia);
+
+    const comercializadoras = Number(row?.comercializadoras ?? 0);
+    const promedio = row?.promedio ? Number(row.promedio) : 0;
+    const maxima = row?.maxima ? Number(row.maxima) : 0;
+    const minima = row?.minima ? Number(row.minima) : 0;
+
+    return {
+      comercializadoras,
+      tarifaPromedio: Number(promedio.toFixed(2)),
+      tarifaMaxima: Number(maxima.toFixed(2)),
+      tarifaMinima: Number(minima.toFixed(2)),
+    };
+  }
 }

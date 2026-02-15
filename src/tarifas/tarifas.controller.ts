@@ -23,4 +23,9 @@ export class TarifasController {
   lastUpdate() {
     return this.service.lastUpdate();
   }
+
+  @Get('dashboard')
+  dashboard() {
+    return this.service.dashboard();
+  }
 }

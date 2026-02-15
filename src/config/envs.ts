@@ -7,6 +7,8 @@ interface EnvVars {
   JWT_SECRET: string;
   JWT_REFRESH_SECRET: string;
   API_TARIFA: string;
+  API_TIMEOUT: number;
+  API_RETRIES: number;
   SMTP_HOST: string;
   SMTP_PORT: number;
   SMTP_USER: string;
@@ -22,6 +24,8 @@ const envsSchema = joi
     JWT_SECRET: joi.string().required(),
     JWT_REFRESH_SECRET: joi.string().required(),
     API_TARIFA: joi.string().required(),
+    API_TIMEOUT: joi.number().default(30000),
+    API_RETRIES: joi.number().default(3),
     SMTP_HOST: joi.string().required(),
     SMTP_PORT: joi.number().required(),
     SMTP_USER: joi.string().required(),
@@ -47,6 +51,8 @@ export const envs = {
   jwtSecret: envVars.JWT_SECRET,
   jwtRefreshSecret: envVars.JWT_REFRESH_SECRET,
   apiTarifa: envVars.API_TARIFA,
+  apiTimeout: envVars.API_TIMEOUT,
+  apiRetries: envVars.API_RETRIES,
   smtpHost: envVars.SMTP_HOST,
   smtpPort: envVars.SMTP_PORT,
   smtpUser: envVars.SMTP_USER,

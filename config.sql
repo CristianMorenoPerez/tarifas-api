@@ -31,14 +31,19 @@ CREATE OR REPLACE PROCEDURE sp_insert_tarifas_bulk(payload jsonb)
 LANGUAGE plpgsql
 AS $$
 BEGIN
-  INSERT INTO tarifas_energia (anio, periodo, comercializadora, nivel, cu_total)
+  INSERT INTO tarifas_energia (anio, periodo, comercializadora, nivel, cu_total, created_at)
   SELECT
     (elem->>'a_o')::int,
     (elem->>'periodo')::text,
     (elem->>'operador_de_red')::text,
     (elem->>'nivel')::text,
-    (elem->>'cu_total')::numeric(10,2)
+    (elem->>'cu_total')::numeric(10,2),
+    NOW()
   FROM jsonb_array_elements(payload) AS elem
-  ON CONFLICT (anio, periodo, comercializadora, nivel) DO NOTHING;
+  ON CONFLICT (anio, periodo, comercializadora, nivel) 
+  DO UPDATE SET
+    cu_total = EXCLUDED.cu_total,
+    created_at = NOW()
+  WHERE tarifas_energia.cu_total IS DISTINCT FROM EXCLUDED.cu_total;
 END;
 $$;

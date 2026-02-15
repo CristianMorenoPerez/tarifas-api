@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { envs } from './config/envs';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 async function bootstrap() {
   const logger = new Logger('bootstrap');
@@ -17,7 +18,7 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
 
-    app.setGlobalPrefix('api/v2');
+    app.setGlobalPrefix('api/v1');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -30,7 +31,10 @@ async function bootstrap() {
     })
   );
 
+  app.useGlobalFilters(new GlobalExceptionFilter());
+
   await app.listen(envs.port ?? 3000);
-  logger.log(`App running on port ${envs.port}`);
+  logger.log(`App running on  http://localhost:${envs.port}`);
+  logger.log(`Swagger docs available at http://localhost:${envs.port}/docs`);
 }
 bootstrap();

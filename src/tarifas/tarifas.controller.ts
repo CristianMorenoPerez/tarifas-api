@@ -1,6 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { TarifasService } from './tarifas.service';
+import { PaginatorDto } from '@/common/dtos/paginator.dto';
 
 @ApiTags('tarifas')
 @Controller('tarifas')
@@ -12,18 +13,10 @@ export class TarifasController {
   @ApiQuery({ name: 'periodo', required: false, type: String })
   @ApiQuery({ name: 'comercializadora', required: false, type: String })
   @ApiQuery({ name: 'nivel', required: false, type: String })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'offset', required: false, type: Number })
-  find(@Query() query: any) {
-    const params = {
-      anio: query.anio ? Number(query.anio) : undefined,
-      periodo: query.periodo,
-      comercializadora: query.comercializadora,
-      nivel: query.nivel,
-      limit: query.limit ? Number(query.limit) : undefined,
-      offset: query.offset ? Number(query.offset) : undefined,
-    };
-    return this.service.find(params);
+  @ApiQuery({ name: 'limit', required: true, type: Number })
+  @ApiQuery({ name: 'offset', required: true, type: Number })
+  find(@Query() query: PaginatorDto) {
+    return this.service.find(query);
   }
 
   @Get('ultima-actualizacion')

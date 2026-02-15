@@ -15,6 +15,7 @@
       "@/config": ["src/config"],
       "@/database": ["src/database"],
       "@/common": ["src/common"],
+      "@/tarifas": ["src/tarifas"],
     },
     "incremental": true,
     "skipLibCheck": true,

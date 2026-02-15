@@ -2,19 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { db } from '@/database/pg/db';
 import { tarifasEnergia, etlRuns } from '@/database/pg/schema';
 import { eq, and, like, desc, sql } from 'drizzle-orm';
+import { PaginatorDto } from '@/common/dtos/paginator.dto';
+import { PaginatorResponse } from '@/common/interfaces/paginator.interface';
+import { TarifasEnergia } from '@/tarifas/interface/TarifasEnergia.interface';
 
-interface QueryParams {
-  anio?: number;
-  periodo?: string;
-  comercializadora?: string;
-  nivel?: string;
-  limit?: number;
-  offset?: number;
-}
+
 
 @Injectable()
 export class TarifasService {
-  async find(params: QueryParams) {
+  async find(params: PaginatorDto): Promise<PaginatorResponse<TarifasEnergia>> {
     const where = [];
     if (params.anio) where.push(eq(tarifasEnergia.anio, params.anio));
     if (params.periodo) where.push(eq(tarifasEnergia.periodo, params.periodo));
@@ -42,10 +38,16 @@ export class TarifasService {
       .where(whereExpr);
 
     return {
-      items: rows,
-      total: Number(countRow?.count ?? 0),
-      limit,
-      offset,
+      pages: rows.map((row) => ({
+        ...row,
+        cuTotal: Number(row.cuTotal),
+      })),
+      meta: {
+        total: Number(countRow?.count ?? 0),
+        page: params.offset ?? 1,
+        limit,
+        totalPages: Math.ceil(Number(countRow?.count ?? 0) / limit),
+      }
     };
   }
 

@@ -4,6 +4,7 @@ import { tarifasEnergia, etlRuns } from '@/database/pg/schema';
 import { eq, and, like, desc, sql } from 'drizzle-orm';
 import { PaginatorDto } from '@/common/dtos/paginator.dto';
 import { DashboardFiltersDto } from '@/tarifas/dto/dashboard-filters.dto';
+import { TarifasOptions } from '@/tarifas/interface/tarifas-options.interface';
 import { PaginatorResponse } from '@/common/interfaces/paginator.interface';
 import { TarifasEnergia } from '@/tarifas/interface/TarifasEnergia.interface';
 
@@ -91,6 +92,33 @@ export class TarifasService {
       tarifaPromedio: Number(promedio.toFixed(2)),
       tarifaMaxima: Number(maxima.toFixed(2)),
       tarifaMinima: Number(minima.toFixed(2)),
+    };
+  }
+
+  async options(): Promise<TarifasOptions> {
+    const comercialRows = await db
+      .select({ comercializadora: sql<string>`DISTINCT ${tarifasEnergia.comercializadora}` })
+      .from(tarifasEnergia)
+      .orderBy(tarifasEnergia.comercializadora);
+
+    const anioRows = await db
+      .select({ anio: sql<number>`DISTINCT ${tarifasEnergia.anio}` })
+      .from(tarifasEnergia)
+      .orderBy(tarifasEnergia.anio);
+
+    const nivelRows = await db
+      .select({ nivel: sql<string>`DISTINCT ${tarifasEnergia.nivel}` })
+      .from(tarifasEnergia)
+      .orderBy(tarifasEnergia.nivel);
+
+    const comercializadoras = comercialRows.map((r) => r.comercializadora ?? '');
+    const anios = anioRows.map((r) => Number(r.anio ?? 0)).filter((v) => v !== 0);
+    const niveles = nivelRows.map((r) => r.nivel ?? '');
+
+    return {
+      comercializadoras,
+      anios,
+      niveles,
     };
   }
 }

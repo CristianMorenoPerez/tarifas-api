@@ -28,7 +28,10 @@ export class ForbiddenException extends HttpException {
 }
 
 export class ValidationFailedException extends HttpException {
-  constructor(message: string, public errors?: any) {
+  constructor(
+    message: string,
+    public errors?: any,
+  ) {
     super(
       {
         statusCode: HttpStatus.BAD_REQUEST,
@@ -41,7 +44,10 @@ export class ValidationFailedException extends HttpException {
 }
 
 export class ExternalApiException extends HttpException {
-  constructor(message: string, public externalService?: string) {
+  constructor(
+    message: string,
+    public externalService?: string,
+  ) {
     super(
       {
         statusCode: HttpStatus.BAD_GATEWAY,

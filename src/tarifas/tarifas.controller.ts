@@ -2,6 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { TarifasService } from './tarifas.service';
 import { PaginatorDto } from '@/common/dtos/paginator.dto';
+import { DashboardFiltersDto } from '@/tarifas/dto/dashboard-filters.dto';
 
 @ApiTags('tarifas')
 @Controller('tarifas')
@@ -25,7 +26,11 @@ export class TarifasController {
   }
 
   @Get('dashboard')
-  dashboard() {
-    return this.service.dashboard();
+  @ApiQuery({ name: 'anio', required: false, type: Number })
+  @ApiQuery({ name: 'periodo', required: false, type: String })
+  @ApiQuery({ name: 'comercializadora', required: false, type: String })
+  @ApiQuery({ name: 'nivel', required: false, type: String })
+  dashboard(@Query() query: DashboardFiltersDto) {
+    return this.service.dashboard(query);
   }
 }

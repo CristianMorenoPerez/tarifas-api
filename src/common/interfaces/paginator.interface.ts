@@ -1,8 +1,6 @@
-
-
 export interface PaginatorResponse<T> {
-    pages: T[];
-    meta: PaginationMeta;
+  pages: T[];
+  meta: PaginationMeta;
 }
 
 export interface PaginationMeta {

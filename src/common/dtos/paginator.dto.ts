@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 interface QueryParams {
   anio?: number;
@@ -9,22 +9,21 @@ interface QueryParams {
   offset?: number;
 }
 
-
 export class PaginatorDto implements QueryParams {
-    @IsOptional()
-    @IsNumber()
-    anio?: number;
-    @IsOptional()
-    @IsString()
-    periodo?: string;
-    @IsOptional()
-    @IsString()
-    comercializadora?: string;
-    @IsOptional()
-    @IsString()
-    nivel?: string;
-    @IsNumber()
-    limit: number;
-    @IsNumber()
-    offset: number;
+  @IsOptional()
+  @IsNumber()
+  anio?: number;
+  @IsOptional()
+  @IsString()
+  periodo?: string;
+  @IsOptional()
+  @IsString()
+  comercializadora?: string;
+  @IsOptional()
+  @IsString()
+  nivel?: string;
+  @IsNumber()
+  limit: number;
+  @IsNumber()
+  offset: number;
 }

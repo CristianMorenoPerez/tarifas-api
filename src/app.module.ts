@@ -6,7 +6,13 @@ import { EtlModule } from './etl/etl.module';
 import { TarifasModule } from './tarifas/tarifas.module';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), DatabaseModule, CommonModule, EtlModule, TarifasModule],
+  imports: [
+    ScheduleModule.forRoot(),
+    DatabaseModule,
+    CommonModule,
+    EtlModule,
+    TarifasModule,
+  ],
   controllers: [],
   providers: [],
 })

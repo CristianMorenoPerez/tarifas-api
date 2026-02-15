@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 
-import { HttpAdapter, ApiResponse } from '@/common/interfaces/http-adapter.interface';
+import {
+  HttpAdapter,
+  ApiResponse,
+} from '@/common/interfaces/http-adapter.interface';
 import { envs } from '@/config/envs';
 
 @Injectable()
@@ -55,6 +58,9 @@ export class AxiosAdapter implements HttpAdapter {
       }
     }
 
-    throw lastError || new Error('No se pudo conectar a la API después de múltiples intentos');
+    throw (
+      lastError ||
+      new Error('No se pudo conectar a la API después de múltiples intentos')
+    );
   }
 }

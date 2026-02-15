@@ -6,7 +6,10 @@ import { sql } from 'drizzle-orm';
 import { db } from '@/database/pg/db';
 import { etlRuns } from '@/database/pg/schema';
 import { MailService } from '@/common/mail/mail.service';
-import { ExternalApiException, BusinessException } from '@/common/exceptions/custom.exceptions';
+import {
+  ExternalApiException,
+  BusinessException,
+} from '@/common/exceptions/custom.exceptions';
 
 @Injectable()
 export class EtlService {
@@ -21,7 +24,9 @@ export class EtlService {
     const inicioProceso = Date.now();
 
     // Extracción: obtener datos de la API
-    const { data, duration: duracionApi } = await this.http.get<TarifaEtl[]>(envs.apiTarifa);
+    const { data, duration: duracionApi } = await this.http.get<TarifaEtl[]>(
+      envs.apiTarifa,
+    );
 
     if (!data || data.length === 0) {
       throw new ExternalApiException(
@@ -29,7 +34,6 @@ export class EtlService {
         'datos.gov.co',
       );
     }
-
 
     // Transformación y Cargue
     const inicioDb = Date.now();
@@ -45,8 +49,6 @@ export class EtlService {
       totalRegistros: data.length,
       duracionMs: duracionTotal,
     });
-
-
 
     // Enviar notificación por email
     await this.mail.send({

@@ -3,10 +3,9 @@ import { db } from '@/database/pg/db';
 import { tarifasEnergia, etlRuns } from '@/database/pg/schema';
 import { eq, and, like, desc, sql } from 'drizzle-orm';
 import { PaginatorDto } from '@/common/dtos/paginator.dto';
+import { DashboardFiltersDto } from '@/tarifas/dto/dashboard-filters.dto';
 import { PaginatorResponse } from '@/common/interfaces/paginator.interface';
 import { TarifasEnergia } from '@/tarifas/interface/TarifasEnergia.interface';
-
-
 
 @Injectable()
 export class TarifasService {
@@ -47,7 +46,7 @@ export class TarifasService {
         page: params.offset ?? 1,
         limit,
         totalPages: Math.ceil(Number(countRow?.count ?? 0) / limit),
-      }
+      },
     };
   }
 
@@ -60,7 +59,18 @@ export class TarifasService {
     return row ?? null;
   }
 
-  async dashboard() {
+  async dashboard(params?: DashboardFiltersDto) {
+    const where = [];
+    if (params?.anio) where.push(eq(tarifasEnergia.anio, params.anio));
+    if (params?.periodo) where.push(eq(tarifasEnergia.periodo, params.periodo));
+    if (params?.comercializadora)
+      where.push(
+        like(tarifasEnergia.comercializadora, `%${params.comercializadora}%`),
+      );
+    if (params?.nivel) where.push(eq(tarifasEnergia.nivel, params.nivel));
+
+    const whereExpr = where.length ? and(...where) : undefined;
+
     const [row] = await db
       .select({
         comercializadoras: sql<number>`COUNT(DISTINCT ${tarifasEnergia.comercializadora})`,
@@ -68,7 +78,8 @@ export class TarifasService {
         maxima: sql<number>`MAX(${tarifasEnergia.cuTotal})`,
         minima: sql<number>`MIN(${tarifasEnergia.cuTotal})`,
       })
-      .from(tarifasEnergia);
+      .from(tarifasEnergia)
+      .where(whereExpr);
 
     const comercializadoras = Number(row?.comercializadoras ?? 0);
     const promedio = row?.promedio ? Number(row.promedio) : 0;

@@ -18,7 +18,7 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
 
-    app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix('api/v1');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -27,8 +27,8 @@ async function bootstrap() {
       transform: true,
       transformOptions: {
         enableImplicitConversion: true,
-      }
-    })
+      },
+    }),
   );
 
   app.useGlobalFilters(new GlobalExceptionFilter());

@@ -16,11 +16,11 @@ export class MailService {
   private readonly transporter = nodemailer.createTransport({
     host: envs.smtpHost,
     port: envs.smtpPort,
-    secure: envs.smtpPort === 587,
+    secure: false,
     auth: {
       user: envs.smtpUser,
       pass: envs.smtpPass,
-    },
+    },  
     connectionTimeout: 5000,
     greetingTimeout: 5000,
     socketTimeout: 5000,

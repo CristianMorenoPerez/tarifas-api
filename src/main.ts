@@ -34,7 +34,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   app.enableCors({
-    origin: ['http://localhost:4200', 'http://localhost:8080','https://tarifas-api-production.up.railway.app'],
+    origin: ['http://localhost:4200', 'http://localhost:8080','https://tarifas-app-production.up.railway.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

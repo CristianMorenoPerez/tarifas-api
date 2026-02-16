@@ -27,32 +27,26 @@ export class AxiosAdapter implements HttpAdapter {
 
     for (let attempt = 1; attempt <= envs.apiRetries; attempt++) {
       try {
-        this.logger.log(
-          `📡 Conectando a API (intento ${attempt}/${envs.apiRetries})...`,
-        );
         startAttemptTime = Date.now();
 
         const { data } = await this.axios.get<T>(url);
 
         const duration = Date.now() - startAttemptTime;
-        this.logger.log(
-          `✅ Respuesta recibida en ${duration}ms. Registros: ${Array.isArray(data) ? data.length : 0}`,
-        );
 
         return { data, duration };
       } catch (error) {
         lastError = error as Error;
         const duration = Date.now() - startAttemptTime;
-
+        void duration;
         if (attempt < envs.apiRetries) {
           const waitTime = Math.pow(2, attempt - 1) * 1000; // Exponential backoff
           this.logger.warn(
-            `⚠️ Error en intento ${attempt}: ${lastError.message}. Reintentando en ${waitTime}ms...`,
+            ` Error en intento ${attempt}: ${lastError.message}. Reintentando en ${waitTime}ms...`,
           );
           await new Promise((resolve) => setTimeout(resolve, waitTime));
         } else {
           this.logger.error(
-            `❌ Todos los intentos fallaron. Último error: ${lastError.message}`,
+            ` Todos los intentos fallaron. Último error: ${lastError.message}`,
           );
         }
       }

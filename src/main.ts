@@ -33,6 +33,13 @@ async function bootstrap() {
 
   app.useGlobalFilters(new GlobalExceptionFilter());
 
+  app.enableCors({
+    origin: ['http://localhost:4200', 'http://localhost:8080'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
+
   await app.listen(envs.port ?? 3000);
   logger.log(`App running on  http://localhost:${envs.port}`);
   logger.log(`Swagger docs available at http://localhost:${envs.port}/docs`);

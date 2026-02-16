@@ -7,6 +7,7 @@ import { DashboardFiltersDto } from '@/tarifas/dto/dashboard-filters.dto';
 import { TarifasOptions } from '@/tarifas/interface/tarifas-options.interface';
 import { PaginatorResponse } from '@/common/interfaces/paginator.interface';
 import { TarifasEnergia } from '@/tarifas/interface/TarifasEnergia.interface';
+import { Value } from '@/common/interfaces/value.interface';
 
 @Injectable()
 export class TarifasService {
@@ -60,8 +61,9 @@ export class TarifasService {
     return row ?? null;
   }
 
-  async dashboard(params?: DashboardFiltersDto) {
+  async dashboard(params?: DashboardFiltersDto): Promise<Value[]> {
     const where = [];
+
     if (params?.anio) where.push(eq(tarifasEnergia.anio, params.anio));
     if (params?.periodo) where.push(eq(tarifasEnergia.periodo, params.periodo));
     if (params?.comercializadora)
@@ -83,21 +85,47 @@ export class TarifasService {
       .where(whereExpr);
 
     const comercializadoras = Number(row?.comercializadoras ?? 0);
-    const promedio = row?.promedio ? Number(row.promedio) : 0;
-    const maxima = row?.maxima ? Number(row.maxima) : 0;
-    const minima = row?.minima ? Number(row.minima) : 0;
+    const promedio = Number(row?.promedio ?? 0);
+    const maxTarifa = Number(row?.maxima ?? 0);
+    const minTarifa = Number(row?.minima ?? 0);
 
-    return {
-      comercializadoras,
-      tarifaPromedio: Number(promedio.toFixed(2)),
-      tarifaMaxima: Number(maxima.toFixed(2)),
-      tarifaMinima: Number(minima.toFixed(2)),
-    };
+    return [
+      {
+        label: 'Comercializadoras',
+        value: comercializadoras.toString(),
+        description: 'Empresas registradas',
+        icon: 'pi-building',
+        colorScheme: 'primary',
+      },
+      {
+        label: 'Tarifa Promedio',
+        value: `$${promedio.toFixed(2)}`,
+        description: 'CU Total $/kWh',
+        icon: 'pi-chart-bar',
+        colorScheme: 'blue',
+      },
+      {
+        label: 'Tarifa Máxima',
+        value: `$${maxTarifa.toFixed(2)}`,
+        description: 'CU Total $/kWh',
+        icon: 'pi-arrow-up',
+        colorScheme: 'red',
+      },
+      {
+        label: 'Tarifa Mínima',
+        value: `$${minTarifa.toFixed(2)}`,
+        description: 'CU Total $/kWh',
+        icon: 'pi-arrow-down',
+        colorScheme: 'green',
+      },
+    ];
   }
 
   async options(): Promise<TarifasOptions> {
     const comercialRows = await db
-      .select({ comercializadora: sql<string>`DISTINCT ${tarifasEnergia.comercializadora}` })
+      .select({
+        comercializadora: sql<string>`DISTINCT ${tarifasEnergia.comercializadora}`,
+      })
       .from(tarifasEnergia)
       .orderBy(tarifasEnergia.comercializadora);
 
@@ -111,14 +139,24 @@ export class TarifasService {
       .from(tarifasEnergia)
       .orderBy(tarifasEnergia.nivel);
 
-    const comercializadoras = comercialRows.map((r) => r.comercializadora ?? '');
-    const anios = anioRows.map((r) => Number(r.anio ?? 0)).filter((v) => v !== 0);
-    const niveles = nivelRows.map((r) => r.nivel ?? '');
+    const periodoRows = await db
+      .select({ periodo: sql<string>`DISTINCT ${tarifasEnergia.periodo}` })
+      .from(tarifasEnergia)
+      .orderBy(tarifasEnergia.periodo);
 
+    const comercializadoras = comercialRows.map(
+      (r) => r.comercializadora ?? '',
+    );
+    const anios = anioRows
+      .map((r) => Number(r.anio ?? 0))
+      .filter((v) => v !== 0);
+    const niveles = nivelRows.map((r) => r.nivel ?? '');
+    const periodos = periodoRows.map((r) => r.periodo ?? '');
     return {
       comercializadoras,
       anios,
       niveles,
+      periodos,
     };
   }
 }

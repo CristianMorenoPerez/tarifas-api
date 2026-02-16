@@ -1,10 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsOptional, IsString, IsInt } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class DashboardFiltersDto {
   @ApiPropertyOptional({ type: Number })
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
+  @IsInt()
   anio?: number;
 
   @ApiPropertyOptional({ type: String })

@@ -3,12 +3,37 @@ services:
     image: postgres:17.6
     restart: always
     ports:
-      - '5450:5432'
+      - "5450:5432"            # puerto host:contendor (puedes cambiarlo)
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    container_name: test_postgres_sql
+    container_name: tarifas_db
     volumes:
       - ./postgres:/var/lib/postgresql/data
       - ./config.sql:/docker-entrypoint-initdb.d/config.sql
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"            # host 3000 -> contenedor 3000 (Swagger en /docs)
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # OJO: tu app usa DATABASE_URL, no DB_HOST/DB_PORT
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - API_TARIFA=${API_TARIFA}
+      - API_TIMEOUT=${API_TIMEOUT}
+      - API_RETRIES=${API_RETRIES}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - EMAIL_TO=${EMAIL_TO}
+    container_name: tarifas-api

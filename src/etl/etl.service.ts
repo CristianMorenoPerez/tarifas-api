@@ -6,10 +6,7 @@ import { sql } from 'drizzle-orm';
 import { db } from '@/database/pg/db';
 import { etlRuns } from '@/database/pg/schema';
 import { MailService } from '@/common/mail/mail.service';
-import {
-  ExternalApiException,
-  BusinessException,
-} from '@/common/exceptions/custom.exceptions';
+import { ExternalApiException } from '@/common/exceptions/custom.exceptions';
 
 @Injectable()
 export class EtlService {
@@ -47,7 +44,7 @@ export class EtlService {
     // Registrar ejecución
     await db.insert(etlRuns).values({
       totalRegistros: data.length,
-      duracionMs: duracionTotal,
+      duracionMs: duracionApi,
     });
 
     // Enviar notificación por email

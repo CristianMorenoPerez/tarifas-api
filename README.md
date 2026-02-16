@@ -45,22 +45,27 @@ DATABASE_URL=postgresql://postgres:1234@localhost:5450/energy_tariffs_db
 
 API_TARIFA=https://datos.gov.co/resource/ytme-6qnu.json
 
-SMTP_HOST=smtp-relay.brevo.com
-SMTP_PORT=587
-SMTP_USER=tu-email@example.com
-SMTP_PASS=tu-contraseña
+API_TIMEOUT=30000
+API_RETRIES=3
+API_TIMEOUT=30000
+API_RETRIES=3
+SMTP_HOST = smtp-relay.brevo.com
+SMTP_PORT = 587
+SMTP_USER = 8d334d001@smtp-brevo.com
+SMTP_PASS = B4FCyjq1x86OgwMb
+EMAIL_FROM = cristianxavimoreno@gmail.com
+EMAIL_TO   = cristian.x.moreno.perez@gmail.com
 
 ```
 
 ### 4. Iniciar la base de datos con Docker
 
 ```bash
-docker-compose up -d
+docker-compose up -d db
 ```
 
-Esto levanta:
-- PostgreSQL en puerto 5450
-- Base de datos `energy_tariffs_db` preconfigurada
+Esto levanta solo PostgreSQL en el puerto 5450 y ejecuta `config.sql` para crear
+las tablas y el procedimiento almacenado `sp_insert_tarifas_bulk`.
 
 ### 5. Aplicar el schema a la base de datos
 
@@ -81,6 +86,103 @@ Este comando:
 ```bash
 npm run build
 ```
+
+---
+
+## Ejecutar todo el stack con Docker
+
+Este proyecto incluye un `Dockerfile` para la API y un `docker-compose.yaml` que
+levanta **PostgreSQL + API NestJS**.
+
+### 1. Variables de entorno
+
+En el archivo `.env` de la raíz asegúrate de tener, como mínimo:
+
+```env
+PORT=3000
+DB_USER=postgres
+DB_PASSWORD=1234
+DB_NAME=energy_tariffs_db
+DATABASE_URL=postgresql://postgres:1234@localhost:5450/energy_tariffs_db
+
+API_TARIFA=https://datos.gov.co/resource/ytme-6qnu.json
+
+JWT_SECRET=super-secret
+JWT_REFRESH_SECRET=super-refresh-secret
+
+SMTP_HOST=smtp-relay.brevo.com
+SMTP_PORT=587
+SMTP_USER=...
+SMTP_PASS=...
+EMAIL_FROM=...
+EMAIL_TO=...
+```
+
+Para Docker Compose, la API usa `DATABASE_URL` apuntando al servicio `db`:
+
+```yaml
+DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+```
+
+Esto ya está configurado en `docker-compose.yaml`.
+
+### 2. Levantar Postgres + API con Docker Compose
+
+#### Modo desarrollo (sin rebuild)
+
+```bash
+docker compose up -d
+```
+
+- Levanta `db` y `api` con las imágenes ya construidas.
+- Úsalo cuando no cambiaste código ni `Dockerfile` y solo quieres iniciar el stack.
+
+#### Modo producción / rebuild
+
+```bash
+docker compose up --build -d
+```
+
+- Reconstruye la imagen de la API usando el `Dockerfile`.
+- Levanta el contenedor `db` (PostgreSQL) en el puerto `5450`.
+- Levanta el contenedor `api` en el puerto `3000`.
+
+Al terminar:
+
+- API: `http://localhost:3000/api/v1`
+- Swagger: `http://localhost:3000/docs`
+
+### 3. Construir y correr solo la imagen de la API
+
+Si ya tienes una base de datos PostgreSQL externa (por ejemplo en Railway o RDS),
+puedes construir y correr solo la imagen de la API:
+
+```bash
+# Construir imagen
+docker build -t auth-api .
+
+# Ejecutar contenedor apuntando a una BD externa
+docker run -d \
+  --name auth-api \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e PORT=3000 \
+  -e DATABASE_URL="postgresql://usuario:password@host:puerto/base" \
+  -e API_TARIFA="$API_TARIFA" \
+  -e JWT_SECRET="$JWT_SECRET" \
+  -e JWT_REFRESH_SECRET="$JWT_REFRESH_SECRET" \
+  -e SMTP_HOST="$SMTP_HOST" \
+  -e SMTP_PORT="$SMTP_PORT" \
+  -e SMTP_USER="$SMTP_USER" \
+  -e SMTP_PASS="$SMTP_PASS" \
+  -e EMAIL_FROM="$EMAIL_FROM" \
+  -e EMAIL_TO="$EMAIL_TO" \
+  auth-api
+```
+
+Con esto puedes desplegar fácilmente la imagen en servicios como Railway, Render,
+Fly.io, etc., siempre que configures las **mismas variables de entorno** y un
+`DATABASE_URL` válido hacia tu base de datos en la nube.
 
 ## Desarrollo
 

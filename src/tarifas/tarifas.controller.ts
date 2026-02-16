@@ -25,14 +25,20 @@ export class TarifasController {
 
   @Get('ultima-actualizacion')
   @ApiOperation({ summary: 'Obtener la última ejecución del ETL' })
-  @ApiResponse({ status: 200, description: 'Información de la última ejecución del ETL' })
+  @ApiResponse({
+    status: 200,
+    description: 'Información de la última ejecución del ETL',
+  })
   lastUpdate() {
     return this.service.lastUpdate();
   }
 
   @Get('dashboard')
   @ApiOperation({ summary: 'Obtener métricas agregadas del dashboard' })
-  @ApiResponse({ status: 200, description: 'KPIs: comercializadoras, tarifa promedio, máxima y mínima' })
+  @ApiResponse({
+    status: 200,
+    description: 'KPIs: comercializadoras, tarifa promedio, máxima y mínima',
+  })
   @ApiQuery({ name: 'anio', required: false, type: Number })
   @ApiQuery({ name: 'periodo', required: false, type: String })
   @ApiQuery({ name: 'comercializadora', required: false, type: String })
@@ -42,7 +48,9 @@ export class TarifasController {
   }
 
   @Get('options')
-  @ApiOperation({ summary: 'Obtener opciones para filtros: comercializadoras, años y niveles' })
+  @ApiOperation({
+    summary: 'Obtener opciones para filtros: comercializadoras, años y niveles',
+  })
   @ApiResponse({
     status: 200,
     description: 'Opciones disponibles para filtros',

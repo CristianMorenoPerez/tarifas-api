@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { envs } from '@/config/envs';
+import * as nodemailer from 'nodemailer';
 
 interface MailOptions {
   to: string;
@@ -13,7 +14,6 @@ export class MailService {
   async send(options: MailOptions) {
     if (!options.to || !options.subject) return;
     try {
-      const nodemailer = await import('nodemailer');
       const transporter = nodemailer.createTransport({
         host: envs.smtpHost,
         port: envs.smtpPort,

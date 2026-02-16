@@ -48,11 +48,11 @@ export class EtlService {
     });
 
     // Enviar notificación por email
-    // await this.mail.send({
-    //   to: envs.emailTo,
-    //   subject: 'ETL tarifas ejecutado',
-    //   text: `Se cargaron ${data.length} registros en ${duracionTotal}ms (API: ${duracionApi}ms, BD: ${duracionDb}ms).`,
-    // });
+    await this.mail.send({
+      to: envs.emailTo,
+      subject: 'ETL tarifas ejecutado',
+      text: `Se cargaron ${data.length} registros en ${duracionTotal}ms (API: ${duracionApi}ms, BD: ${duracionDb}ms).`,
+    });
 
     return {
       success: true,

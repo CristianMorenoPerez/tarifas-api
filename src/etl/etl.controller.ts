@@ -11,7 +11,7 @@ export class EtlController {
   @ApiOperation({ summary: 'Ejecutar proceso ETL' })
   @ApiResponse({ status: 200, description: 'ETL ejecutado correctamente' })
   @ApiResponse({ status: 500, description: 'Error al ejecutar ETL' })
-  runEtl() {
-    return this.etlService.runEtl();
+ async runEtl() {
+    return await this.etlService.runEtl();
   }
 }

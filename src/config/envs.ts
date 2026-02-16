@@ -6,13 +6,11 @@ interface EnvVars {
   DATABASE_URL: string;
   JWT_SECRET: string;
   JWT_REFRESH_SECRET: string;
+  BREVO_API_KEY: string;
+  BREVO_API_URL: string;
   API_TARIFA: string;
   API_TIMEOUT: number;
   API_RETRIES: number;
-  SMTP_HOST: string;
-  SMTP_PORT: number;
-  SMTP_USER: string;
-  SMTP_PASS: string;
   EMAIL_FROM: string;
   EMAIL_TO: string;
 }
@@ -23,13 +21,11 @@ const envsSchema = joi
     DATABASE_URL: joi.string().required(),
     JWT_SECRET: joi.string().required(),
     JWT_REFRESH_SECRET: joi.string().required(),
+    BREVO_API_KEY: joi.string().required(),
+    BREVO_API_URL: joi.string().required(),
     API_TARIFA: joi.string().required(),
     API_TIMEOUT: joi.number().default(30000),
     API_RETRIES: joi.number().default(3),
-    SMTP_HOST: joi.string().required(),
-    SMTP_PORT: joi.number().required(),
-    SMTP_USER: joi.string().required(),
-    SMTP_PASS: joi.string().required(),
     EMAIL_FROM: joi.string().email().required(),
     EMAIL_TO: joi.string().email().required(),
   })
@@ -53,10 +49,8 @@ export const envs = {
   apiTarifa: envVars.API_TARIFA,
   apiTimeout: envVars.API_TIMEOUT,
   apiRetries: envVars.API_RETRIES,
-  smtpHost: envVars.SMTP_HOST,
-  smtpPort: Number(envVars.SMTP_PORT),
-  smtpUser: envVars.SMTP_USER,
-  smtpPass: envVars.SMTP_PASS,
+  brevoApiKey: envVars.BREVO_API_KEY,
+  brevoApiUrl: envVars.BREVO_API_URL,
   emailFrom: envVars.EMAIL_FROM,
   emailTo: envVars.EMAIL_TO,
 };

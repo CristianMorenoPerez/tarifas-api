@@ -53,7 +53,7 @@ export class EtlService {
         .send({
           to: envs.emailTo,
           subject: 'ETL tarifas ejecutado',
-          text: `Se cargaron ${data.length} registros en ${duracionTotal}ms (API: ${duracionApi}ms, BD: ${duracionDb}ms).`,
+          text: `Se cargaron ${data.length} registros en ${duracionTotal}ms.`,
         })
         .catch((error) => {
           this.logger.error('Error al enviar email:', error);

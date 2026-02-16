@@ -78,4 +78,12 @@ export class AxiosAdapter implements HttpAdapter {
       new Error('No se pudo conectar a la API después de múltiples intentos')
     );
   }
+
+
+  async post<T>(url: string, body: any, config?: any): Promise<ApiResponse<T>> {
+  const start = Date.now();
+  const { data } = await this.axios.post<T>(url, body, config);
+  return { data, duration: Date.now() - start };
+}
+
 }

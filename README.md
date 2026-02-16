@@ -89,10 +89,10 @@ npm run build
 
 ---
 
-## Ejecutar todo el stack con Docker
+## Docker Compose (solo base de datos)
 
-Este proyecto incluye un `Dockerfile` para la API y un `docker-compose.yaml` que
-levanta **PostgreSQL + API NestJS**.
+En producción no se usa `docker-compose` para la API (Railway la despliega desde el `Dockerfile`).
+El `docker-compose.yaml` de este repo se usa únicamente para levantar la **base de datos local**.
 
 ### 1. Variables de entorno
 
@@ -126,31 +126,49 @@ DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
 
 Esto ya está configurado en `docker-compose.yaml`.
 
-### 2. Levantar Postgres + API con Docker Compose
+### 2. Levantar solo Postgres con Docker Compose
 
 #### Modo desarrollo (sin rebuild)
 
 ```bash
-docker compose up -d
+docker compose up -d db
 ```
 
-- Levanta `db` y `api` con las imágenes ya construidas.
-- Úsalo cuando no cambiaste código ni `Dockerfile` y solo quieres iniciar el stack.
+- Levanta `db` con la imagen ya construida.
+- Úsalo cuando no cambiaste `config.sql` ni necesitas reconstruir imágenes.
 
 #### Modo producción / rebuild
 
 ```bash
-docker compose up --build -d
+docker compose up --build -d db
 ```
 
-- Reconstruye la imagen de la API usando el `Dockerfile`.
-- Levanta el contenedor `db` (PostgreSQL) en el puerto `5450`.
-- Levanta el contenedor `api` en el puerto `3000`.
+- Reconstruye y levanta el contenedor `db` (PostgreSQL) en el puerto `5450`.
 
 Al terminar:
 
-- API: `http://localhost:3000/api/v1`
-- Swagger: `http://localhost:3000/docs`
+La API corre fuera de Compose (local con `npm run start:prod`, o en Railway).
+
+---
+
+## Despliegue de la API en Railway (con Dockerfile)
+
+1. Crea servicio **PostgreSQL** en Railway y obtén su `DATABASE_URL`.
+2. Aplica el schema con Drizzle apuntando a esa BD:
+   ```bash
+   DATABASE_URL=postgresql://usuario:password@host:puerto/base npx drizzle-kit push
+   ```
+3. Crea servicio **API** desde tu repo; Railway construirá con el `Dockerfile`.
+4. En Variables de entorno del servicio API configura:
+   - `PORT` (Railway la define; úsala)
+   - `DATABASE_URL` (la de la BD de Railway)
+   - `API_TARIFA`, `API_TIMEOUT`, `API_RETRIES`
+   - `JWT_SECRET`, `JWT_REFRESH_SECRET`
+   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
+   - `EMAIL_FROM`, `EMAIL_TO`
+5. Al terminar el deploy:
+   - API: `https://<tu-servicio>.railway.app/api/v1`
+   - Swagger: `https://<tu-servicio>.railway.app/docs`
 
 ### 3. Construir y correr solo la imagen de la API
 

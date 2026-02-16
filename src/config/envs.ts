@@ -54,7 +54,7 @@ export const envs = {
   apiTimeout: envVars.API_TIMEOUT,
   apiRetries: envVars.API_RETRIES,
   smtpHost: envVars.SMTP_HOST,
-  smtpPort: envVars.SMTP_PORT,
+  smtpPort: Number(envVars.SMTP_PORT),
   smtpUser: envVars.SMTP_USER,
   smtpPass: envVars.SMTP_PASS,
   emailFrom: envVars.EMAIL_FROM,

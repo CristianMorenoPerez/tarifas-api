@@ -21,6 +21,7 @@ export class MailService {
       user: envs.smtpUser,
       pass: envs.smtpPass,
     },  
+    requireTLS: true,
     connectionTimeout: 5000,
     greetingTimeout: 5000,
     socketTimeout: 5000,

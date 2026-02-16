@@ -19,7 +19,7 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 COPY --from=builder /app/dist ./dist
-COPY drizzle.config.json ./
+COPY drizzle.config.js ./
 
 EXPOSE 3000
 

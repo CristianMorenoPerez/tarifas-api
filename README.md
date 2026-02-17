@@ -54,7 +54,7 @@ EMAIL_FROM=cristianxavimoreno@gmail.com
 EMAIL_TO=cristian.x.moreno.perez@gmail.com
 
 
-BREVO_API_KEY=tuApiKey
+BREVO_API_KEY=tuapikey
 BREVO_API_URL=https://api.brevo.com/v3/smtp/email
 
 

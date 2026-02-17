@@ -22,8 +22,8 @@ Este proyecto consiste en:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <tu-repo>
-cd auth-api
+git clone https://github.com/CristianMorenoPerez/tarifas-api.git
+cd tarifas-api
 ```
 
 ### 2. Instalar dependencias
@@ -41,27 +41,29 @@ PORT=3000
 DB_USER=postgres
 DB_PASSWORD=1234
 DB_NAME=energy_tariffs_db
+
+
 DATABASE_URL=postgresql://postgres:1234@localhost:5450/energy_tariffs_db
 
 API_TARIFA=https://datos.gov.co/resource/ytme-6qnu.json
+API_TIMEOUT=30000
+API_RETRIES=3
+API_TIMEOUT=30000
+API_RETRIES=3
+EMAIL_FROM=cristianxavimoreno@gmail.com
+EMAIL_TO=cristian.x.moreno.perez@gmail.com
 
-API_TIMEOUT=30000
-API_RETRIES=3
-API_TIMEOUT=30000
-API_RETRIES=3
-SMTP_HOST = smtp-relay.brevo.com
-SMTP_PORT = 587
-SMTP_USER = 8d334d001@smtp-brevo.com
-SMTP_PASS = B4FCyjq1x86OgwMb
-EMAIL_FROM = cristianxavimoreno@gmail.com
-EMAIL_TO   = cristian.x.moreno.perez@gmail.com
+
+BREVO_API_KEY=tuApiKey
+BREVO_API_URL=https://api.brevo.com/v3/smtp/email
+
 
 ```
 
 ### 4. Iniciar la base de datos con Docker
 
 ```bash
-docker-compose up -d db
+docker-compose up -d
 ```
 
 Esto levanta solo PostgreSQL en el puerto 5450 y ejecuta `config.sql` para crear
@@ -87,121 +89,8 @@ Este comando:
 npm run build
 ```
 
----
-
-## Docker Compose (solo base de datos)
-
-En producción no se usa `docker-compose` para la API (Railway la despliega desde el `Dockerfile`).
-El `docker-compose.yaml` de este repo se usa únicamente para levantar la **base de datos local**.
-
-### 1. Variables de entorno
-
-En el archivo `.env` de la raíz asegúrate de tener, como mínimo:
-
-```env
-PORT=3000
-DB_USER=postgres
-DB_PASSWORD=1234
-DB_NAME=energy_tariffs_db
-DATABASE_URL=postgresql://postgres:1234@localhost:5450/energy_tariffs_db
-
-API_TARIFA=https://datos.gov.co/resource/ytme-6qnu.json
-
-JWT_SECRET=super-secret
-JWT_REFRESH_SECRET=super-refresh-secret
-
-SMTP_HOST=smtp-relay.brevo.com
-SMTP_PORT=587
-SMTP_USER=...
-SMTP_PASS=...
-EMAIL_FROM=...
-EMAIL_TO=...
-```
-
-Para Docker Compose, la API usa `DATABASE_URL` apuntando al servicio `db`:
-
-```yaml
-DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
-```
-
-Esto ya está configurado en `docker-compose.yaml`.
-
-### 2. Levantar solo Postgres con Docker Compose
-
-#### Modo desarrollo (sin rebuild)
-
-```bash
-docker compose up -d db
-```
-
-- Levanta `db` con la imagen ya construida.
-- Úsalo cuando no cambiaste `config.sql` ni necesitas reconstruir imágenes.
-
-#### Modo producción / rebuild
-
-```bash
-docker compose up --build -d db
-```
-
-- Reconstruye y levanta el contenedor `db` (PostgreSQL) en el puerto `5450`.
-
-Al terminar:
-
-La API corre fuera de Compose (local con `npm run start:prod`, o en Railway).
 
 ---
-
-## Despliegue de la API en Railway (con Dockerfile)
-
-1. Crea servicio **PostgreSQL** en Railway y obtén su `DATABASE_URL`.
-2. Aplica el schema con Drizzle apuntando a esa BD:
-   ```bash
-   DATABASE_URL=postgresql://usuario:password@host:puerto/base npx drizzle-kit push
-   ```
-3. Crea servicio **API** desde tu repo; Railway construirá con el `Dockerfile`.
-4. En Variables de entorno del servicio API configura:
-   - `PORT` (Railway la define; úsala)
-   - `DATABASE_URL` (la de la BD de Railway)
-   - `API_TARIFA`, `API_TIMEOUT`, `API_RETRIES`
-   - `JWT_SECRET`, `JWT_REFRESH_SECRET`
-   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
-   - `EMAIL_FROM`, `EMAIL_TO`
-5. Al terminar el deploy:
-   - API: `https://<tu-servicio>.railway.app/api/v1`
-   - Swagger: `https://<tu-servicio>.railway.app/docs`
-
-### 3. Construir y correr solo la imagen de la API
-
-Si ya tienes una base de datos PostgreSQL externa (por ejemplo en Railway o RDS),
-puedes construir y correr solo la imagen de la API:
-
-```bash
-# Construir imagen
-docker build -t auth-api .
-
-# Ejecutar contenedor apuntando a una BD externa
-docker run -d \
-  --name auth-api \
-  -p 3000:3000 \
-  -e NODE_ENV=production \
-  -e PORT=3000 \
-  -e DATABASE_URL="postgresql://usuario:password@host:puerto/base" \
-  -e API_TARIFA="$API_TARIFA" \
-  -e JWT_SECRET="$JWT_SECRET" \
-  -e JWT_REFRESH_SECRET="$JWT_REFRESH_SECRET" \
-  -e SMTP_HOST="$SMTP_HOST" \
-  -e SMTP_PORT="$SMTP_PORT" \
-  -e SMTP_USER="$SMTP_USER" \
-  -e SMTP_PASS="$SMTP_PASS" \
-  -e EMAIL_FROM="$EMAIL_FROM" \
-  -e EMAIL_TO="$EMAIL_TO" \
-  auth-api
-```
-
-Con esto puedes desplegar fácilmente la imagen en servicios como Railway, Render,
-Fly.io, etc., siempre que configures las **mismas variables de entorno** y un
-`DATABASE_URL` válido hacia tu base de datos en la nube.
-
 ## Desarrollo
 
 Para correr el servidor en modo desarrollo con reinicio automático:

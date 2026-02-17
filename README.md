@@ -43,15 +43,15 @@ DB_PASSWORD=1234
 DB_NAME=energy_tariffs_db
 
 
-DATABASE_URL=postgresql://postgres:1234@localhost:5450/energy_tariffs_db
+DATABASE_URL=postgresql://user:1234@localhost:5450/energy_tariffs_db
 
 API_TARIFA=https://datos.gov.co/resource/ytme-6qnu.json
 API_TIMEOUT=30000
 API_RETRIES=3
 API_TIMEOUT=30000
 API_RETRIES=3
-EMAIL_FROM=cristianxavimoreno@gmail.com
-EMAIL_TO=cristian.x.moreno.perez@gmail.com
+EMAIL_FROM=tuemail@gmail.com
+EMAIL_TO=emailreceptor@gmail.com
 
 
 BREVO_API_KEY=tuapikey
